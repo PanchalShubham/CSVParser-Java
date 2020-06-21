@@ -7,6 +7,11 @@ A small Java API for working with comma-separated-values (*.csv) files.
 3. Generate HTML for tabular visualization of information.
 4. Compare contents of CSV files on basis of information regardless of order. 
 
+# Notes
+Works with files containing comma separated non-escaped information without quotes.
+e.g. Name, "Country,Code" such entry are invalid
+e.g. Name, Country, Code such entry are valid
+
 # Documentation
 A full documentation of csv package containing classes csv.CSVReader and csv.CSVWriter for reading/writing can be found at https://panchalshubham.github.io/CSVParser-Java/csv/package-summary.html (generated via JavaDoc tool)
 
