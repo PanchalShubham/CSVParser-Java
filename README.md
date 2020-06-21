@@ -1,5 +1,5 @@
 # CSVParser-Java
-A small Java API for working with comma-separated-values (*.csv) files.
+A small Java API for working with comma-separated-values `*.csv` files.
 
 # Features
 1. Read CSV file and parse into java object for query.
@@ -8,9 +8,10 @@ A small Java API for working with comma-separated-values (*.csv) files.
 4. Compare contents of CSV files on basis of information regardless of order. 
 
 # Notes
-Works with files containing comma separated non-escaped information without quotes.
-e.g. Name, "Country,Code" such entry are invalid
-e.g. Name, Country, Code such entry are valid
+Works with files containing comma separated non-escaped information with or without quotes.
+For more information on type of info supported checkout the csvs directory for sample `*.csv` files
+Also checkout the generated `*.html` files for corresponding csvs to get a feel of working of this API
+
 
 # Documentation
 A full documentation of csv package containing classes csv.CSVReader and csv.CSVWriter for reading/writing can be found at https://panchalshubham.github.io/CSVParser-Java/csv/package-summary.html (generated via JavaDoc tool)
