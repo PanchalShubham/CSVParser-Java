@@ -17,6 +17,7 @@ Also checkout the generated `*.html` files for corresponding csvs to get a feel 
 A full documentation of csv package containing classes csv.CSVReader and csv.CSVWriter for reading/writing can be found at https://panchalshubham.github.io/CSVParser-Java/csv/package-summary.html (generated via JavaDoc tool)
 
 # Examples
+Following example shows usage of CSVReader  
 ```java
 /*
     Following code snippet shows the usage of CSVReader
@@ -70,6 +71,7 @@ try{
     e.printStackTrace();
 }
 ```
+Following example shows usage of CSVWriter  
 ```java
 try{
 
