@@ -71,6 +71,61 @@ try{
 }
 ```
 ```java
+try{
+
+    // let's define set of keys
+    Set<String> keys = new HashSet<>();
+    // add keys to set
+    keys.add("ID"); keys.add("Address"); keys.add("Role");
+
+    // create a CSV Writer for given set of keys
+    CSVWriter writer = new CSVWriter(keys);
+
+    // create data for writing
+    Map<String, String> record1 = new HashMap<>();
+    record1.put("ID", "01"); record1.put("Address", "E-121 Main Street, ABC"); record1.put("Role", "Developer");
+    // add data to writer
+    writer.addRow(record1);
+
+    // create data for writing
+    Map<String, String> record2 = new HashMap<>();
+    record2.put("ID", "02"); record2.put("Address", "E-121 Main Street, XYZ"); record2.put("Role", "Developer");
+    // add data to writer
+    writer.addRow(record2);
+
+    // print the content of writer
+    System.out.println(writer);
+
+    // let's add one more column contact
+    // we need to provide values for this key
+    Map<Integer, String> contacts = new HashMap<>();
+    // contact for 1st entry (use zero-based indexing)
+    contacts.put(0, "+91-0123456789");
+    // contact for 2nd entry
+    contacts.put(1, "+91-9087315346");
+    // add columns to writer
+    writer.addKey("Contact", contacts);
+
+    // print the update version of writer to console
+    System.out.println(writer);
+
+    // check if writer contains a given key
+    System.out.println(writer.containsKey("ID"));
+    System.out.println(writer.containsKey("Position"));
+
+    // search for records (returns 1-based indexing)
+    System.out.println(writer.indexOf("ID", "01"));
+    System.out.println(writer.indexOf("Role", "Programmer"));
+
+    // write writer's data to CSV file
+    writer.toCSV("/home/shubham/Desktop/new_records.csv");
+
+    // generate html representation of writer
+    writer.toHTML("/home/shubham/Desktop/new_records.html", "Title: Records created with CSVWriter");
+} catch (IOException e){
+    System.out.println("IOException: " + e.getMessage());
+    e.printStackTrace();
+}
 
 ```
 # Contribution
