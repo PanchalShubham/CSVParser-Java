@@ -69,7 +69,7 @@ public final class CSVWriter {
 
     /**
      * Removes the mapping for given index in CSVWriter
-     * @param index for which entry-row to be deleted
+     * @param index zero-based for which entry-row to be deleted
      * @throws IllegalArgumentException if index is out of Bound
      * */
     public void removeRow(int index) throws IllegalArgumentException{

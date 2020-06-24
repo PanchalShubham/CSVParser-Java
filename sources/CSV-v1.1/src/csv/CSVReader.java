@@ -159,6 +159,31 @@ public final class CSVReader {
         return list;
     }
 
+    /**
+     * Searches for the row which contains the given key-value mapping (added in v1.1)
+     * @param key key of (key,value) search
+     * @param value value of (key, value) search
+     * @throws IllegalArgumentException if either key or value is null
+     * @return zero-based index of 1st row containing (key,value) mapping if exist; -1 otherwise
+     * */
+    public int indexOf(String key, String value) throws IllegalArgumentException{
+        /*check if key is null*/
+        if (key == null) throw new IllegalArgumentException("IllegalArgumentException: key cannot be null");
+        if (value == null) throw new IllegalArgumentException("IllegalArgumentException: value cannot be null");
+        /*stores the index*/
+        int index = 0; boolean found = false;
+        /*iterate through each row*/
+        for (Map<String, String> row : this.list) {
+            String val = row.getOrDefault(key, null);
+            if (val != null && val.equals(value))
+                /*update found status*/
+                found = true;
+            /*increase the index by 1*/
+            index++;
+        }
+        /*return the appropriate values*/
+        return found ? index : -1;
+    }
 
     /**
      * Creates an HTML file for a tabular visualization of given CSV file

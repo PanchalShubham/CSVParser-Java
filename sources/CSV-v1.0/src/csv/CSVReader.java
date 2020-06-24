@@ -2,9 +2,12 @@
 package csv;
 
 /*necessary imports*/
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -41,27 +44,37 @@ public final class CSVReader {
     public CSVReader(String filename) throws IOException, ParseException {
         /*open the file*/
         BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
-        /*define the pattern for a row in csv file*/
-        /*must start with any character other than a comma followed by any number of ,one-or-more-non-comma-character*/
-        String pattern = "^([^,]+)(,[^,]+)*$";
         /*stores the line number*/
         long lineNumber = 0;
         /*read the first line of file*/
         String tag;
         /*read the first non-empty line*/
-        while ( (tag = br.readLine()) != null && tag.trim().isEmpty());
+        while ( (tag = br.readLine()) != null && tag.trim().isEmpty())  lineNumber++;
         /*check if tag is empty*/
         if (tag == null)
-            throw new ParseException("ParseException at line 1. Found empty row.", 1);
-        /*check if tag satisfy the pattern for a row in CSV file*/
-        if (!Pattern.matches(pattern, tag))
-            throw new ParseException("ParseException at line 1. Expected value before or after comma(,)", 1);
+            throw new ParseException("ParseException: Found empty file", 1);
+        /*check if string starts or ends with delimiter*/
+        if (!Pattern.matches("^[^,].*[^,]$", tag))
+            throw new ParseException("ParseException: Expected value before or after delimiter(,)", 1);
         /*increase the line number by 1*/
         lineNumber++;
         /*get the keys*/
-        String[] keys = tag.split(",");
+        String[] keys = process(tag, lineNumber);
         /*trim the keys i.e. remove leading and trailing whitespaces*/
         for (int i = 0; i < keys.length; ++i)   keys[i] = keys[i].trim();
+        /*iterate through keys and check if it contains empty empty key or duplicate keys*/
+        Set<String> keyFrequencies = new HashSet<>();
+        /*iterate through each possible key*/
+        for (String key : keys){
+            /*check if key is empty*/
+            if (key.isEmpty())
+                throw new ParseException("ParseException: empty key found", 1);
+            /*check if it is a duplicate key*/
+            if (keyFrequencies.contains(key))
+                throw new ParseException("ParseException: duplicate key found", 1);
+            /*add this key to map*/
+            keyFrequencies.add(key);
+        }
         /*create a new list of maps*/
         this.list = new ArrayList<>();
         /*stores the input line from file*/
@@ -73,11 +86,11 @@ public final class CSVReader {
                 continue;
             /*increase the line number by 1*/
             lineNumber++;
-            /*check if this line satisfies the criteria of a csv row*/
-            if (!Pattern.matches(pattern, line))
-                throw new ParseException("ParseException at line " + lineNumber + ". Expected value before or after comma(,)", (int)lineNumber);
+            /*check if string starts or ends with delimiter*/
+            if (!Pattern.matches("^[^,].*[^,]$", line))
+                throw new ParseException("ParseException: Expected value before or after delimiter(,)", 1);
             /*split the line into values*/
-            String[] values = line.split(",");
+            String[] values = process(line, lineNumber);
             /*match the #keys in line*/
             if (keys.length < values.length)        throw new ParseException("ParseException at line " + lineNumber + ". Found more values than expected. (Expected: " + keys.length + ", Found: " + values.length + ")", (int)lineNumber);
             else if (keys.length > values.length)   throw new ParseException("ParseException at line " + lineNumber + ". Found fewer values than expected. (Expected: " + keys.length + ", Found: " + values.length + ")", (int)lineNumber);
@@ -98,7 +111,6 @@ public final class CSVReader {
         /*iterate through list and populate data*/
         Collections.addAll(this.keys, keys);
     }
-
 
     /**
      * Fetches the name of file used for creating CSVReader
@@ -252,5 +264,38 @@ public final class CSVReader {
         }
         /*all conditions are satisfied*/
         return true;
+    }
+
+
+    /*processes the given string by delimiting the values using , and and merging pieces*/
+    private String[] process(String line, long lineNumber) throws ParseException{
+        /*check if string starts or ends with delimiter*/
+        if (!Pattern.matches("^([^,\"]*|\"[^\"]*\")(,([^,\"]*|\"[^\"]*\"))*$", line))
+            throw new ParseException("ParseException: found non-terminating string value at line " + lineNumber + ".", 1);
+        /*stores the intermediate information*/
+        List<String> list = new ArrayList<>();
+        /*split the line w.r.t ,*/
+        String[] values = line.split(",");
+        /*fetch the number of pieces*/
+        int length = values.length;
+        /*merge values w.r.t "*/
+        for (int i = 0; i < length; ++i){
+            /*if this part doesn't contain a " then we take it as single part*/
+            if (!values[i].startsWith("\"")){
+                list.add(values[i]);
+                continue;
+            }
+            /*create a new list to store pieces*/
+            List<String> tempList = new ArrayList<>();
+            /*we look for remaining parts which contains "*/
+            while (i < length && !values[i].endsWith("\"")) tempList.add(values[i++]);
+            /*check if reach to end of string*/
+            if (i == length)
+                throw new ParseException("ParseException: found non-terminating string value at line " + lineNumber + ".", (int)lineNumber);
+            /*join the items of tempList using , and add result to list*/
+            list.add(String.join(",", tempList) + values[i]);
+        }
+        /*return the array representation of list*/
+        return list.toArray(new String[]{});
     }
 }
